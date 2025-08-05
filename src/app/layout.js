@@ -1,13 +1,15 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Ubuntu, Roboto } from "next/font/google";
 import "./globals.css";
+import Nav from "./componentes/Nav";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const ubuntuSans = Ubuntu({
+  variable: "--font-ubuntu-sans",
   subsets: ["latin"],
+  weight: ['300', '400', '500', '700']
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const robotoMono = Roboto({
+  variable: "--font-roboto-mono",
   subsets: ["latin"],
 });
 
@@ -20,8 +22,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${ubuntuSans.variable} ${robotoMono.variable} antialiased`}
       >
+        <Nav/>
         {children}
       </body>
     </html>
