@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model assento {
+  id_assento        Int                 @id @default(autoincrement())
+  cadeira           String?             @db.VarChar(10)
+  status            String?             @default("V") @db.Char(1)
+  id_evento         Int
+  evento            evento              @relation(fields: [id_evento], references: [id_evento], onDelete: NoAction, onUpdate: NoAction, map: "assento_ibfk_1")
+  assento_reservado assento_reservado[]
+
+  @@index([id_evento], map: "id_evento")
+}
+
+model assento_reservado {
+  id_assento_reservado Int     @id @default(autoincrement())
+  id_usuario           Int
+  id_assento           Int
+  usuario              usuario @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "assento_reservado_ibfk_1")
+  assento              assento @relation(fields: [id_assento], references: [id_assento], onDelete: NoAction, onUpdate: NoAction, map: "assento_reservado_ibfk_2")
+
+  @@index([id_assento], map: "id_assento")
+  @@index([id_usuario], map: "id_usuario")
+}
+
+model evento {
+  id_evento      Int         @id @default(autoincrement())
+  id_funcionario Int
+  id_usuario     Int
+  assento        assento[]
+  funcionario    funcionario @relation(fields: [id_funcionario], references: [id_funcionario], onDelete: NoAction, onUpdate: NoAction, map: "evento_ibfk_1")
+  usuario        usuario     @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "evento_ibfk_2")
+
+  @@index([id_funcionario], map: "id_funcionario")
+  @@index([id_usuario], map: "id_usuario")
+}
+
+model funcionario {
+  id_funcionario Int      @id @default(autoincrement())
+  id_pessoa      Int
+  evento         evento[]
+  pessoa         pessoa   @relation(fields: [id_pessoa], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction, map: "funcionario_ibfk_1")
+
+  @@index([id_pessoa], map: "id_pessoa")
+}
+
+model pessoa {
+  id_pessoa                          Int           @id @default(autoincrement())
+  nome                               String        @db.VarChar(45)
+  cpf                                String        @unique(map: "cpf") @db.VarChar(15)
+  email                              String?       @unique(map: "email") @db.VarChar(100)
+  cidade                             String        @db.VarChar(30)
+  id_usuario                         Int
+  funcionario                        funcionario[]
+  usuario_pessoa_id_usuarioTousuario usuario       @relation("pessoa_id_usuarioTousuario", fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "pessoa_ibfk_1")
+  usuario                            usuario[]
+
+  @@index([id_usuario], map: "id_usuario")
+}
+
+model usuario {
+  id_usuario                        Int                  @id @default(autoincrement())
+  deficiencia                       usuario_deficiencia?
+  id_pessoa                         Int
+  assento_reservado                 assento_reservado[]
+  evento                            evento[]
+  pessoa_pessoa_id_usuarioTousuario pessoa[]             @relation("pessoa_id_usuarioTousuario")
+  pessoa                            pessoa               @relation(fields: [id_pessoa], references: [id_pessoa], onDelete: NoAction, onUpdate: NoAction, map: "usuario_ibfk_1")
+
+  @@index([id_pessoa], map: "id_pessoa")
+}
+
+enum usuario_deficiencia {
+  visual
+  fisica
+  mental
+  multipla
+  nenhuma
+}
