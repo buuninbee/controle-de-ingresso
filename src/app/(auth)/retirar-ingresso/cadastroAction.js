@@ -1,7 +1,6 @@
 'use server'
 
 import db from "@/app/lib/db"
-import { hashSync } from "bcrypt"
 import { redirect } from "next/navigation"
 
 const cadastroAction = async (formData) => {
@@ -12,13 +11,13 @@ const cadastroAction = async (formData) => {
     throw new Error("Prencha seus dados")
   }
 
+  
   await db.pessoa.create({
     data: {
       nome: data.nome,
       email: data.email,
       cpf: data.cpf,
-      cidade: data.cidade,
-      senha: hashSync(data.senha, 10)
+      cidade: data.cidade
     }
   })
 
